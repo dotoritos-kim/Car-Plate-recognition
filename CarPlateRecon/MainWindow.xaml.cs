@@ -25,9 +25,9 @@ namespace CarPlateRecon
             {
                 if (File.Exists(FindImage.FileName))
                 {
-                    using Bitmap OriginalSource = new Bitmap(FindImage.FileName);
-                    using ConvertTools CVT = new ConvertTools();
-                    using ProcessClass processClass = new ProcessClass(CVT.ImageToByte(OriginalSource));
+                    Bitmap OriginalSource = new Bitmap(FindImage.FileName);
+                    ConvertTools CVT = new ConvertTools();
+                    ProcessClass processClass = new ProcessClass(CVT.ImageToByte(OriginalSource));
                     OriginalImage.Source = new BitmapImage(new Uri(FindImage.FileName, UriKind.RelativeOrAbsolute));
                     ResultImage.Source = CVT.BitmapToBitmapImage(CVT.MatToBitmap(processClass.ImageProcess()));
                 }
