@@ -114,7 +114,7 @@ namespace CarPlateRecon
                         Delta_y = 1;
                     }
 
-                    gradient = Delta_y / Delta_x;
+                    gradient = (double)Delta_y / Delta_x;
 
                     if (gradient < 0.15)
                     {
