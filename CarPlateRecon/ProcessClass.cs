@@ -65,6 +65,8 @@ namespace CarPlateRecon
                 (SnakePlate.Height / 20) * 6 < boundingRect.Y + boundingRect.Height &&
                 (SnakePlate.Width / 20) * 17 > boundingRect.X + boundingRect.Width &&
                 (SnakePlate.Height / 20) * 14 > boundingRect.Y + boundingRect.Height &&
+                 boundingRect.Width > 10 &&
+                boundingRect.Height > 20 &&
                 boundingRect.Width < 100 &&
                 boundingRect.Height < 200 &&
                 boundingRect.Width * boundingRect.Height > 400 &&
@@ -100,7 +102,7 @@ namespace CarPlateRecon
                 {
                     int Delta_x = Math.Abs(SortPoint[j].TopLeft.X - SortPoint[i].TopLeft.X);
 
-                    if (Delta_x > 200)
+                    if (Delta_x > 100)
                         break;
 
                     int Delta_y = Math.Abs(SortPoint[j].TopLeft.Y - SortPoint[i].TopLeft.Y);
@@ -114,9 +116,9 @@ namespace CarPlateRecon
                         Delta_y = 1;
                     }
 
-                    gradient = Delta_y / Delta_x;
+                    gradient = (double)Delta_y / Delta_x;
 
-                    if (gradient < 0.15)
+                    if (gradient < 0.35)
                     {
                         count += 1;
                     }
@@ -133,7 +135,7 @@ namespace CarPlateRecon
                             new Scalar(255, 0, 0),
                             2
                             );
-                        FindRect.Add(new Rect(SortPoint[selected].TopLeft.X, SortPoint[selected].TopLeft.Y, plate_width - (SortPoint[selected].Width), SortPoint[selected].Height));
+                        FindRect.Add(new Rect(SortPoint[selected].TopLeft.X, SortPoint[selected].TopLeft.Y, plate_width + SortPoint[selected].Width, SortPoint[selected].Height));
                     }
                 }
             }
@@ -162,7 +164,8 @@ namespace CarPlateRecon
 
             Cv2.ImShow("ㅁㄴㅇㄹ2", temp1);
             Cv2.ImShow("ㅁㄴㅇㄹ3", GrayImage);
-           
+            Cv2.ImShow("ㅁㄴㅇㄹ4", SnakePlateRGB);
+
 
 
 
