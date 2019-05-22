@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using OpenCvSharp;
+using OpenCvSharp.Blob;
 
 
 namespace CarPlateRecon
@@ -20,21 +21,21 @@ namespace CarPlateRecon
 
         public Mat ImageProcess()
         {
-
             Mat GrayImage = new Mat();
             using Mat AdaptiveImage = new Mat();
-            Mat PlateTmpImage = new Mat(OriginalImage.Size(), MatType.CV_8UC1);
+            _ = new Mat(OriginalImage.Size(), MatType.CV_8UC1);
+            using Mat EqualizeHist = new Mat();
             using Mat Dilate = new Mat();
             using Mat Erode = new Mat();
             using Mat SnakePlate = new Mat();
-            using var ElementSize = Cv2.GetStructuringElement(MorphShapes.Rect, new Size(1, 1));
+            using var ElementSize = Cv2.GetStructuringElement(MorphShapes.Rect, new Size(2, 2));
 
             Cv2.CvtColor(OriginalImage, GrayImage, ColorConversionCodes.RGB2GRAY);
-            Cv2.FastNlMeansDenoising(GrayImage, GrayImage);
-            Cv2.AdaptiveThreshold(GrayImage, AdaptiveImage, 255, AdaptiveThresholdTypes.GaussianC, ThresholdTypes.BinaryInv, 25, -1);
+            Cv2.EqualizeHist(GrayImage, EqualizeHist);
+            Cv2.FastNlMeansDenoising(EqualizeHist, GrayImage);
+            Cv2.AdaptiveThreshold(GrayImage, AdaptiveImage, 255, AdaptiveThresholdTypes.GaussianC, ThresholdTypes.Binary, 73, -2);
             Cv2.Dilate(AdaptiveImage, Dilate, ElementSize);
             Cv2.Erode(Dilate, Erode, ElementSize);
-
             Erode.CopyTo(SnakePlate);
 
             Point[][] contours;
@@ -44,7 +45,7 @@ namespace CarPlateRecon
                 out contours,
                 out hierarchyIndexes,
                 mode: RetrievalModes.CComp,
-                method: ContourApproximationModes.ApproxSimple);
+                method: ContourApproximationModes.ApproxTC89L1);
             List<Rect> SortPoint = new List<Rect>();
 
 
@@ -65,12 +66,11 @@ namespace CarPlateRecon
                 (SnakePlate.Height / 20) * 6 < boundingRect.Y + boundingRect.Height &&
                 (SnakePlate.Width / 20) * 17 > boundingRect.X + boundingRect.Width &&
                 (SnakePlate.Height / 20) * 14 > boundingRect.Y + boundingRect.Height &&
-                 boundingRect.Width > 10 &&
-                boundingRect.Height > 20 &&
-                boundingRect.Width < 100 &&
+                boundingRect.Width > 3 &&
+                boundingRect.Height > 3 &&
+                boundingRect.Width < 300 &&
                 boundingRect.Height < 200 &&
-                boundingRect.Width * boundingRect.Height > 400 &&
-                boundingRect.Width * boundingRect.Height < 10000
+                boundingRect.Width * boundingRect.Height > 400
                 )
                 {
                     SortPoint.Add(boundingRect);
@@ -91,10 +91,9 @@ namespace CarPlateRecon
                     SortPoint[j + 1] = temp_rect;
                 }
             }
+
             int count = 0;
-            double gradient = 0;
             int friend_count = 0;
-            int selected = 0;
             List<Rect> FindRect = new List<Rect>();
             for (int i = 0; i < SortPoint.Count; i++)
             {
@@ -102,7 +101,7 @@ namespace CarPlateRecon
                 {
                     int Delta_x = Math.Abs(SortPoint[j].TopLeft.X - SortPoint[i].TopLeft.X);
 
-                    if (Delta_x > 100)
+                    if (Delta_x > 300)
                         break;
 
                     int Delta_y = Math.Abs(SortPoint[j].TopLeft.Y - SortPoint[i].TopLeft.Y);
@@ -116,16 +115,15 @@ namespace CarPlateRecon
                         Delta_y = 1;
                     }
 
-                    gradient = (double)Delta_y / Delta_x;
+                    double gradient = (double)Delta_y / Delta_x;
 
-                    if (gradient < 0.35)
+                    if (gradient < 0.15)
                     {
                         count += 1;
                     }
                     if (count > friend_count)
                     {
-
-                        selected = i;
+                        int selected = i;
                         friend_count = count;
                         Cv2.Rectangle(SnakePlateRGB, SortPoint[selected], new Scalar(0, 0, 255), 2);
                         int plate_width = Delta_x;
@@ -135,7 +133,7 @@ namespace CarPlateRecon
                             new Scalar(255, 0, 0),
                             2
                             );
-                        FindRect.Add(new Rect(SortPoint[selected].TopLeft.X, SortPoint[selected].TopLeft.Y, plate_width + SortPoint[selected].Width, SortPoint[selected].Height));
+                        FindRect.Add(new Rect(SortPoint[selected].TopLeft.X - 35, SortPoint[selected].TopLeft.Y, plate_width + 105, SortPoint[selected].Height));
                     }
                 }
             }
@@ -157,21 +155,49 @@ namespace CarPlateRecon
                     var ss = new Mat(OriginalImage, tmp);
                     var roi = new Mat(temp1, new Rect(tmp.X, tmp.Y, ss.Width, ss.Height));
                     ss.CopyTo(roi);
-
                     frch++;
                 }
             }
+            var src = temp1;
+            using (var gray = src.CvtColor(ColorConversionCodes.BGR2GRAY))
+            using (var binary = gray.Threshold(100, 255, ThresholdTypes.Otsu | ThresholdTypes.Binary))
+            {
+                CvBlobs blobs = new CvBlobs(binary);
+
+                using (var render = new Mat(src.Rows, src.Cols, MatType.CV_8UC3, 3))
+                using (var img = new Mat(src.Rows, src.Cols, MatType.CV_8UC3, 3))
+                {
+                    blobs.RenderBlobs(src, render);
+
+                    foreach (KeyValuePair<int, CvBlob> item in blobs)
+                    {
+                        int labelValue = item.Key;
+                        CvBlob blob = item.Value;
+
+                        CvContourChainCode cc = blob.Contour;
+                        cc.Render(img);
+                        double perimeter = cc.Perimeter();
+                    }
+
+                    using (new Window("src", src))
+                    using (new Window("binary", binary))
+                    using (new Window("render", render))
+                    using (new Window("img", img))
+                    {
+                    }
+                }
+
+            }
+
 
             Cv2.ImShow("ㅁㄴㅇㄹ2", temp1);
-            Cv2.ImShow("ㅁㄴㅇㄹ3", GrayImage);
+            //Cv2.ImShow("ㅁㄴㅇㄹ3", GrayImage);
             Cv2.ImShow("ㅁㄴㅇㄹ4", SnakePlateRGB);
 
 
-
-
-            Mat ReturnMat = new Mat();
-            SnakePlateRGB.CopyTo(ReturnMat);
-            return ReturnMat;
+            //Mat ReturnMat = new Mat();
+            //SnakePlateRGB.CopyTo(ReturnMat);
+            return temp1;
         }
 
 

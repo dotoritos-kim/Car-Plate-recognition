@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using OpenCvSharp;
 using System;
 using System.Drawing;
 using System.IO;
@@ -12,6 +13,8 @@ namespace CarPlateRecon
     /// </summary>
     public partial class MainWindow : System.Windows.Window
     {
+        Mat Original = new Mat();
+        Mat Result = new Mat();
         public MainWindow()
         {
             InitializeComponent();
@@ -20,7 +23,7 @@ namespace CarPlateRecon
         private void SearchButton_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog FindImage = new OpenFileDialog();
-
+            FindImage.Multiselect = true;
             if (FindImage.ShowDialog() == true)
             {
                 if (File.Exists(FindImage.FileName))
@@ -29,8 +32,38 @@ namespace CarPlateRecon
                     ConvertTools CVT = new ConvertTools();
                     ProcessClass processClass = new ProcessClass(CVT.ImageToByte(OriginalSource));
                     OriginalImage.Source = new BitmapImage(new Uri(FindImage.FileName, UriKind.RelativeOrAbsolute));
-                    ResultImage.Source = CVT.BitmapToBitmapImage(CVT.MatToBitmap(processClass.ImageProcess()));
+                    Result = processClass.ImageProcess();
+                    ResultImage.Source = CVT.BitmapToBitmapImage(CVT.MatToBitmap(Result));
+                    Original = processClass.OriginalImage;
+                    foreach (string x in FindImage.FileNames)
+                    {
+                        PictureList.Items.Add(x);
+                    }
                 }
+            }
+        }
+
+        private void OriginalImage_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            Cv2.ImShow("OriginalSource", Original);
+        }
+
+        private void ResultImage_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            Cv2.ImShow("Result", Result);
+        }
+
+        private void PictureList_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            if(PictureList.Items.Count > 0)
+            {
+                Bitmap OriginalSource = new Bitmap((string)PictureList.Items[PictureList.SelectedIndex]);
+                ConvertTools CVT = new ConvertTools();
+                ProcessClass processClass = new ProcessClass(CVT.ImageToByte(OriginalSource));
+                OriginalImage.Source = new BitmapImage(new Uri((string)PictureList.Items[PictureList.SelectedIndex]));
+                Result = processClass.ImageProcess();
+                ResultImage.Source = CVT.BitmapToBitmapImage(CVT.MatToBitmap(Result));
+                Original = processClass.OriginalImage;
             }
         }
     }

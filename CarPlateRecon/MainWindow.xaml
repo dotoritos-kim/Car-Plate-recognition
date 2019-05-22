@@ -5,11 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CarPlateRecon"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="864" Width="2010.333">
     <Grid>
         <Button Name="SearchButton" Content="찾아보기" Click="SearchButton_Click" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75"/>
-        <Image Name="OriginalImage" HorizontalAlignment="Left" Height="374" Margin="10,35,0,0" VerticalAlignment="Top" Width="389"/>
-        <Image Name="ResultImage" HorizontalAlignment="Left" Height="374" Margin="399,35,0,0" VerticalAlignment="Top" Width="389"/>
+        <Image MouseLeftButtonUp="OriginalImage_MouseLeftButtonUp" Name="OriginalImage" HorizontalAlignment="Left" Height="793" Margin="10,30,0,0" VerticalAlignment="Top" Width="900"/>
+        <Image MouseLeftButtonUp="ResultImage_MouseLeftButtonUp" Name="ResultImage" HorizontalAlignment="Left" Height="793" Margin="910,30,0,0" VerticalAlignment="Top" Width="900"/>
+        <ListBox Name="PictureList" SelectionChanged="PictureList_SelectionChanged" HorizontalAlignment="Left" Height="793" Margin="1815,30,0,0" VerticalAlignment="Top" Width="177"/>
 
     </Grid>
 </Window>
