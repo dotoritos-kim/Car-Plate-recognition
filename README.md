@@ -33,3 +33,6 @@ Bubble Sort를 이용하여 인식한 영역들을 정렬합니다.
 FindRect에 있는 모든 사각형 영역을 한개의 Mat에 조합하여 하나의 이미지를 만들어 냅니다.
 
 라벨링을 통하여 의미가 있어 보이는 영역을 추출해냅니다.
+
+
+[![예시 영상](https://img.youtube.com/vi/3HVkX4Ns6ik/0.jpg)](https://www.youtube.com/watch?v=3HVkX4Ns6ik)
