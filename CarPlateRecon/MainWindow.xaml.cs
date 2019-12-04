@@ -15,6 +15,7 @@ namespace CarPlateRecon
     {
         Mat Original = new Mat();
         Mat Result = new Mat();
+
         public MainWindow()
         {
             InitializeComponent();
@@ -29,12 +30,19 @@ namespace CarPlateRecon
                 if (File.Exists(FindImage.FileName))
                 {
                     Bitmap OriginalSource = new Bitmap(FindImage.FileName);
+
                     ConvertTools CVT = new ConvertTools();
-                    ProcessClass processClass = new ProcessClass(CVT.ImageToByte(OriginalSource));
+
+                    ProcessClass processClass = new ProcessClass();
+                    processClass.SetImage(CVT.ImageToByte(OriginalSource));
+
                     OriginalImage.Source = new BitmapImage(new Uri(FindImage.FileName, UriKind.RelativeOrAbsolute));
+
                     Result = processClass.ImageProcess();
                     ResultImage.Source = CVT.BitmapToBitmapImage(CVT.MatToBitmap(Result));
+
                     Original = processClass.OriginalImage;
+
                     foreach (string x in FindImage.FileNames)
                     {
                         PictureList.Items.Add(x);
@@ -58,11 +66,17 @@ namespace CarPlateRecon
             if(PictureList.Items.Count > 0)
             {
                 Bitmap OriginalSource = new Bitmap((string)PictureList.Items[PictureList.SelectedIndex]);
+
                 ConvertTools CVT = new ConvertTools();
-                ProcessClass processClass = new ProcessClass(CVT.ImageToByte(OriginalSource));
+
+                ProcessClass processClass = new ProcessClass();
+                processClass.SetImage(CVT.ImageToByte(OriginalSource));
+
                 OriginalImage.Source = new BitmapImage(new Uri((string)PictureList.Items[PictureList.SelectedIndex]));
+
                 Result = processClass.ImageProcess();
                 ResultImage.Source = CVT.BitmapToBitmapImage(CVT.MatToBitmap(Result));
+
                 Original = processClass.OriginalImage;
             }
         }
