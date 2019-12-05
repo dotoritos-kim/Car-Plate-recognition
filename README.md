@@ -12,21 +12,13 @@
 5. Dilate
 6. Erode
 
-boundingRect.X > (SnakePlate.Width / 20) * 3 &&  
-boundingRect.Y > (SnakePlate.Height / 20) * 6 &&  
-boundingRect.X < (SnakePlate.Width / 20) * 17 &&  
-boundingRect.Y < (SnakePlate.Height / 20) * 14 &&  
-(SnakePlate.Width / 20) * 3 < boundingRect.X + boundingRect.Width &&  
-(SnakePlate.Height / 20) * 6 < boundingRect.Y + boundingRect.Height &&  
-(SnakePlate.Width / 20) * 17 > boundingRect.X + boundingRect.Width &&  
-(SnakePlate.Height / 20) * 14 > boundingRect.Y + boundingRect.Height &&  
 boundingRect.Width > 3 &&  
 boundingRect.Height > 3 &&  
 boundingRect.Width < 300 &&  
 boundingRect.Height < 200 &&  
 boundingRect.Width * boundingRect.Height > 400  
 
-일정 비율의 관심영역 안에서 사각형의 최소, 최대 크기를 지정하여 Recognition 합니다.
+사각형의 최소, 최대 크기를 지정하여 Recognition 합니다.
 
 Bubble Sort를 이용하여 인식한 영역들을 정렬합니다.
 영역들 간의 기울기를 계산하여 조건에 부합하며 서로 어울려 있는 사각형인지 판별하여 FindRect 리스트에 추가합니다.
