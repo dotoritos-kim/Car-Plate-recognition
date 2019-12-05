@@ -23,13 +23,13 @@ namespace CarPlateRecon
             this.GrayImage = GrayImage;
         }
 
-        public ProcessPlate(Mat GrayImage,Size ElementSize)
+        public ProcessPlate(Mat GrayImage, Size ElementSize)
         {
             this.GrayImage = GrayImage;
             this.ElementSize = Cv2.GetStructuringElement(MorphShapes.Rect, ElementSize);
         }
 
-        public ProcessPlate(Mat GrayImage, MorphShapes morphShapes,Size ElementSize)
+        public ProcessPlate(Mat GrayImage, MorphShapes morphShapes, Size ElementSize)
         {
             this.GrayImage = GrayImage;
             this.ElementSize = Cv2.GetStructuringElement(morphShapes, ElementSize);
@@ -39,12 +39,13 @@ namespace CarPlateRecon
         {
             Cv2.EqualizeHist(GrayImage, EqualizeHist);
             Cv2.FastNlMeansDenoising(EqualizeHist, GrayImage);
-            Cv2.AdaptiveThreshold(GrayImage, AdaptiveImage, 255, AdaptiveThresholdTypes.GaussianC, ThresholdTypes.Binary, 73, -2);
+            Cv2.AdaptiveThreshold(GrayImage, AdaptiveImage, 255, AdaptiveThresholdTypes.MeanC, ThresholdTypes.Binary, 75, 3);
             Cv2.Dilate(AdaptiveImage, Dilate, ElementSize);
             Cv2.Erode(Dilate, Erode, ElementSize);
             Erode.CopyTo(SnakePlate);
+            Cv2.MedianBlur(SnakePlate, SnakePlate,3);
             Cv2.CvtColor(SnakePlate, SnakeRGB, ColorConversionCodes.GRAY2BGR);
             return SnakePlate;
-        } 
+        }
     }
 }

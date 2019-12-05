@@ -44,19 +44,11 @@ namespace CarPlateRecon
                 var contour = contours[i];
                 var boundingRect = Cv2.BoundingRect(contour);
                 if (
-                boundingRect.X > (SnakePlate.Width / 20) * 3 &&
-                boundingRect.Y > (SnakePlate.Height / 20) * 6 &&
-                boundingRect.X < (SnakePlate.Width / 20) * 17 &&
-                boundingRect.Y < (SnakePlate.Height / 20) * 14 &&
-                (SnakePlate.Width / 20) * 3 < boundingRect.X + boundingRect.Width &&
-                (SnakePlate.Height / 20) * 6 < boundingRect.Y + boundingRect.Height &&
-                (SnakePlate.Width / 20) * 17 > boundingRect.X + boundingRect.Width &&
-                (SnakePlate.Height / 20) * 14 > boundingRect.Y + boundingRect.Height &&
-                boundingRect.Width > 3 &&
-                boundingRect.Height > 3 &&
-                boundingRect.Width < 300 &&
-                boundingRect.Height < 200 &&
-                boundingRect.Width * boundingRect.Height > 400
+                boundingRect.Width > 8 &&
+                boundingRect.Height > 5 &&
+                boundingRect.Width < 40 &&
+                boundingRect.Height < 40 &&
+                boundingRect.Width * boundingRect.Height > 40
                 )
                 {
                     SortPoint.Add(boundingRect);
@@ -76,14 +68,13 @@ namespace CarPlateRecon
             
             for (int i = 0; i < SortPoint.Count; i++)
             {
-                for (int j = 0; j < (SortPoint.Count - 1) - i; j++)
+                for (int j = 0; j < (SortPoint.Count - 1) - (i+1); j++)
                 {
                     var temp_rect = SortPoint[j];
                     SortPoint[j] = SortPoint[j + 1];
                     SortPoint[j + 1] = temp_rect;
                 }
             }
-
             
             for (int i = 0; i < SortPoint.Count; i++)
             {
@@ -91,7 +82,7 @@ namespace CarPlateRecon
                 {
                     int Delta_x = Math.Abs(SortPoint[j].TopLeft.X - SortPoint[i].TopLeft.X);
 
-                    if (Delta_x > 300)
+                    if (Delta_x > 150)
                         break;
 
                     int Delta_y = Math.Abs(SortPoint[j].TopLeft.Y - SortPoint[i].TopLeft.Y);
