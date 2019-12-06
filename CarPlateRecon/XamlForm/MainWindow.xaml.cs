@@ -29,19 +29,7 @@ namespace CarPlateRecon
             {
                 if (File.Exists(FindImage.FileName))
                 {
-                    Bitmap OriginalSource = new Bitmap(FindImage.FileName);
-
-                    ConvertTools CVT = new ConvertTools();
-
-                    ProcessClass processClass = new ProcessClass();
-                    processClass.SetImage(CVT.ImageToByte(OriginalSource));
-
-                    OriginalImage.Source = new BitmapImage(new Uri(FindImage.FileName, UriKind.RelativeOrAbsolute));
-
-                    Result = processClass.ImageProcess();
-                    ResultImage.Source = CVT.BitmapToBitmapImage(CVT.MatToBitmap(Result));
-
-                    Original = processClass.OriginalImage;
+                    processCall(FindImage.FileName);
 
                     foreach (string x in FindImage.FileNames)
                     {
@@ -49,6 +37,24 @@ namespace CarPlateRecon
                     }
                 }
             }
+        }
+
+        private void processCall(string FileName)
+        {
+
+            Bitmap OriginalSource = new Bitmap(FileName);
+
+            ConvertTools CVT = new ConvertTools();
+
+            ProcessClass processClass = new ProcessClass();
+            processClass.SetImage(CVT.ImageToByte(OriginalSource));
+
+            OriginalImage.Source = new BitmapImage(new Uri(FileName, UriKind.RelativeOrAbsolute));
+
+            Result = processClass.ImageProcess();
+            ResultImage.Source = CVT.BitmapToBitmapImage(CVT.MatToBitmap(Result));
+
+            Original = processClass.OriginalImage;
         }
 
         private void OriginalImage_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -63,21 +69,9 @@ namespace CarPlateRecon
 
         private void PictureList_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            if(PictureList.Items.Count > 0)
+            if (PictureList.Items.Count > 0)
             {
-                Bitmap OriginalSource = new Bitmap((string)PictureList.Items[PictureList.SelectedIndex]);
-
-                ConvertTools CVT = new ConvertTools();
-
-                ProcessClass processClass = new ProcessClass();
-                processClass.SetImage(CVT.ImageToByte(OriginalSource));
-
-                OriginalImage.Source = new BitmapImage(new Uri((string)PictureList.Items[PictureList.SelectedIndex]));
-
-                Result = processClass.ImageProcess();
-                ResultImage.Source = CVT.BitmapToBitmapImage(CVT.MatToBitmap(Result));
-
-                Original = processClass.OriginalImage;
+                processCall((string)PictureList.Items[PictureList.SelectedIndex]);
             }
         }
     }

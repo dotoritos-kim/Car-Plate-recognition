@@ -13,6 +13,7 @@ namespace CarPlateRecon
 {
     public class ConvertTools : IDisposable
     {
+        
         public byte[] ImageToByte(Image img)
         {
             using var stream = new MemoryStream();
@@ -49,6 +50,19 @@ namespace CarPlateRecon
 
             return bitmapImage;
 
+        }
+        public byte[] BitMapToByte(Bitmap bitmap)
+        {
+            byte[] result = null;
+
+            if (bitmap != null)
+            {
+                MemoryStream stream = new MemoryStream();
+                bitmap.Save(stream, bitmap.RawFormat);
+                result = stream.ToArray();
+            }
+
+            return result;
         }
         #region IDisposable Support
         private bool disposedValue = false; // 중복 호출을 검색하려면

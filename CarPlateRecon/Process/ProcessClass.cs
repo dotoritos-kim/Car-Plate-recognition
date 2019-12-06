@@ -58,37 +58,14 @@ namespace CarPlateRecon
 
             Mat Confirmed = region.GetRegion();
 
-
-
             Cv2.ImShow("Result1", Confirmed);
-           
-            
             Cv2.CvtColor(Confirmed, tmp, ColorConversionCodes.RGB2GRAY);
             Cv2.Threshold(tmp, tmp, 100, 255, ThresholdTypes.Binary);
-            
             Cv2.ImShow("Result?", tmp);
-
-
             Cv2.ImShow("Result2", processPlate.SnakeRGB);
 
             return Confirmed;
         }
-        private void TemplateMatching(Mat src,Mat mask)
-        {
-            using Mat ScreenMat = src;
-            using Mat FindMat = mask;
-            using Mat res = ScreenMat.MatchTemplate(FindMat, TemplateMatchModes.CCoeffNormed);
-
-            double minval, maxval = 0;
-            Point minloc, maxloc;
-            Cv2.MinMaxLoc(res, out minval, out maxval, out minloc, out maxloc);
-            Debug.WriteLine("찾은 이미지의 유사도 : " + maxval);
-
-            Cv2.Rectangle(src, new Rect(maxloc, mask.Size()), Scalar.Red);
-            Console.WriteLine("minLoc: {0} maxLoc: {1}, maxVal: {2}", minloc, maxloc, maxval);
-        }
-
-
         #region IDisposable Support
         private bool disposedValue = false; // 중복 호출을 검색하려면
         ~ProcessClass()
@@ -131,5 +108,4 @@ namespace CarPlateRecon
         #endregion
 
     }
-
 }

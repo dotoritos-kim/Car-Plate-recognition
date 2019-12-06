@@ -1,6 +1,7 @@
 ﻿using OpenCvSharp;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,13 +13,22 @@ namespace CarPlateRecon
         public Mat SnakePlate = new Mat();
         public Mat OriginalImage = new Mat();
         public Mat SnakeRGB = new Mat();
+        public List<Mat> pieceMats = new List<Mat>();
+
+        List<Rect> SnakeRect = new List<Rect>();
+
+
         List<Rect> SortPoint = new List<Rect>();
+
+
         List<Rect> FindRect = new List<Rect>();
+
+
         Point[][] contours;
 
         public Region_of_Interest(
-            Mat OriginalImage, 
-            Mat SnakePlate, 
+            Mat OriginalImage,
+            Mat SnakePlate,
             Mat SnakeRGB,
             Point[][] contours
             )
@@ -65,17 +75,19 @@ namespace CarPlateRecon
         {
             int count = 0;
             int friend_count = 0;
-            
+            pieceMats.Clear();
+            SnakeRect.Clear();
+
             for (int i = 0; i < SortPoint.Count; i++)
             {
-                for (int j = 0; j < (SortPoint.Count - 1) - (i+1); j++)
+                for (int j = 0; j < (SortPoint.Count - 1) - (i + 1); j++)
                 {
                     var temp_rect = SortPoint[j];
                     SortPoint[j] = SortPoint[j + 1];
                     SortPoint[j + 1] = temp_rect;
                 }
             }
-            
+
             for (int i = 0; i < SortPoint.Count; i++)
             {
                 for (int j = i + 1; j < SortPoint.Count; j++)
@@ -114,11 +126,64 @@ namespace CarPlateRecon
                             new Scalar(255, 0, 0),
                             2
                             );
-                        FindRect.Add(new Rect(SortPoint[selected].TopLeft.X - 35, SortPoint[selected].TopLeft.Y, plate_width + 105, SortPoint[selected].Height));
+                        var Rect = new Rect(SortPoint[selected].TopLeft.X - 35, SortPoint[selected].TopLeft.Y, plate_width + 105, SortPoint[selected].Height);
+                        FindRect.Add(Rect);
+                        SnakeRect.Add(Rect);
                     }
+                }
+                if (SnakeRect.Count > 0)
+                {
+                    pieceMats.Add(setSnakeRegion(SnakeRect));
+                    SnakeRect.Clear();
                 }
             }
         }
+
+      
+
+        private Mat setSnakeRegion(List<Rect> rect)
+        {
+            var width = 0;
+            var height = 0;
+            for (int i = 0; i < rect.Count; i++)
+            {
+                if (width < rect[i].Width)
+                {
+                    width = rect[i].Width;
+                }
+            }
+            for (int i = 0; i < rect.Count; i++)
+            {
+                if (height < rect[i].Height)
+                {
+                    height = rect[i].Height;
+                }
+            }
+
+            int frch = 0;
+            Mat interestRegion = new Mat(new Size(width, height), OriginalImage.Type()).EmptyClone();
+            foreach (Rect tmp in rect)
+            {
+                if (
+                       0 <= tmp.X
+                       && 0 <= tmp.Width
+                       && tmp.X + tmp.Width <= OriginalImage.Cols
+                       && 0 <= tmp.Y
+                       && 0 <= tmp.Height
+                       && tmp.Y + tmp.Height <= OriginalImage.Rows
+                       )
+                {
+                    var ss = new Mat(OriginalImage, tmp);
+                    var roi = new Mat(interestRegion, new Rect(0, 0, ss.Width, ss.Height));
+                    ss.CopyTo(roi);
+                    frch++;
+                }
+            }
+
+            return interestRegion;
+        }
+
+
 
         private Mat setInterestRegion()
         {

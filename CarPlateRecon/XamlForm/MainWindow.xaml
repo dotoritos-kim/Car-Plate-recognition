@@ -11,7 +11,6 @@
         <Image MouseLeftButtonUp="OriginalImage_MouseLeftButtonUp" Name="OriginalImage" HorizontalAlignment="Left" Height="500" Margin="10,30,0,0" VerticalAlignment="Top" Width="600"/>
         <Image MouseLeftButtonUp="ResultImage_MouseLeftButtonUp" Name="ResultImage" HorizontalAlignment="Left" Height="500" Margin="615,30,0,0" VerticalAlignment="Top" Width="600"/>
         <ListBox Name="PictureList" SelectionChanged="PictureList_SelectionChanged" HorizontalAlignment="Left" Height="500" Margin="1215,30,0,0" VerticalAlignment="Top" Width="177"/>
-        <ListBox HorizontalAlignment="Left" Height="125" Margin="10,535,0,0" VerticalAlignment="Top" Width="1378"/>
 
     </Grid>
 </Window>
