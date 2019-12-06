@@ -1,4 +1,6 @@
-﻿using Microsoft.Win32;
+﻿using CarPlateRecon.Core.MatchHistogram;
+using CarPlateRecon.Core.ProcessCore;
+using Microsoft.Win32;
 using OpenCvSharp;
 using System;
 using System.Drawing;
@@ -11,10 +13,11 @@ namespace CarPlateRecon
     /// <summary>
     /// MainWindow.xaml에 대한 상호 작용 논리
     /// </summary>
-    public partial class MainWindow : System.Windows.Window
+    public partial class MainWindow : System.Windows.Window, IConvertTools
     {
         Mat Original = new Mat();
         Mat Result = new Mat();
+        ConvertTools CVT = new ConvertTools();
 
         public MainWindow()
         {
@@ -44,10 +47,10 @@ namespace CarPlateRecon
 
             Bitmap OriginalSource = new Bitmap(FileName);
 
-            ConvertTools CVT = new ConvertTools();
-
-            ProcessClass processClass = new ProcessClass();
+            ProcessCore processClass = new ProcessCore();
             processClass.SetImage(CVT.ImageToByte(OriginalSource));
+
+            MatchHistogram matchHistogram = new MatchHistogram();
 
             OriginalImage.Source = new BitmapImage(new Uri(FileName, UriKind.RelativeOrAbsolute));
 
@@ -73,6 +76,27 @@ namespace CarPlateRecon
             {
                 processCall((string)PictureList.Items[PictureList.SelectedIndex]);
             }
+        }
+
+
+        public BitmapImage BitmapToBitmapImage(Bitmap bitmap)
+        {
+            return ((IConvertTools)CVT).BitmapToBitmapImage(bitmap);
+        }
+
+        public byte[] BitMapToByte(Bitmap bitmap)
+        {
+            return ((IConvertTools)CVT).BitMapToByte(bitmap);
+        }
+
+        public byte[] ImageToByte(Image img)
+        {
+            return ((IConvertTools)CVT).ImageToByte(img);
+        }
+
+        public Bitmap MatToBitmap(Mat Image)
+        {
+            return ((IConvertTools)CVT).MatToBitmap(Image);
         }
     }
 }

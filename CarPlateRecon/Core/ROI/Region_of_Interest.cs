@@ -6,22 +6,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CarPlateRecon
+namespace CarPlateRecon.Core.Roi
 {
-    public class Region_of_Interest
+    public class Region_of_Interest : abstract_Region_of_Interest
     {
         public Mat SnakePlate = new Mat();
         public Mat OriginalImage = new Mat();
         public Mat SnakeRGB = new Mat();
+
         public List<Mat> pieceMats = new List<Mat>();
 
-        List<Rect> SnakeRect = new List<Rect>();
-
-
-        List<Rect> SortPoint = new List<Rect>();
-
-
-        List<Rect> FindRect = new List<Rect>();
+        private List<Rect> SnakeRect = new List<Rect>();
+        private List<Rect> SortPoint = new List<Rect>();
+        private List<Rect> FindRect = new List<Rect>();
 
 
         Point[][] contours;
@@ -38,13 +35,13 @@ namespace CarPlateRecon
             this.SnakeRGB = SnakeRGB;
             this.contours = contours;
         }
-        public Mat GetRegion()
+
+        public override Mat GetRegion()
         {
             setContours();
             snakeGame();
             return setInterestRegion();
         }
-
 
 
         private void setContours()

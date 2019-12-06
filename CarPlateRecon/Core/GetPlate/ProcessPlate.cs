@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CarPlateRecon
+namespace CarPlateRecon.Core.GetPlate
 {
-    public class ProcessPlate
+    public class ProcessPlate : abstract_ProcessPlate
     {
         public Mat GrayImage = new Mat();
         public Mat AdaptiveImage = new Mat();
@@ -35,7 +35,7 @@ namespace CarPlateRecon
             this.ElementSize = Cv2.GetStructuringElement(morphShapes, ElementSize);
         }
 
-        public Mat GetSnakePlate()
+        public override Mat GetSnakePlate()
         {
             Cv2.EqualizeHist(GrayImage, EqualizeHist);
             Cv2.FastNlMeansDenoising(EqualizeHist, GrayImage);

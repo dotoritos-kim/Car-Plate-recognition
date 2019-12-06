@@ -11,19 +11,20 @@ using System.Windows.Media.Imaging;
 
 namespace CarPlateRecon
 {
-    public class ConvertTools : IDisposable
+    public class ConvertTools : IDisposable, IConvertTools
     {
-        
         public byte[] ImageToByte(Image img)
         {
             using var stream = new MemoryStream();
             img.Save(stream, ImageFormat.Png);
             return stream.ToArray();
         }
+
         public Bitmap MatToBitmap(Mat Image)
         {
             return OpenCvSharp.Extensions.BitmapConverter.ToBitmap(Image);
         }
+
         private Bitmap BitmapImageToBitmap(BitmapImage bitmapImage)
         {
             using MemoryStream outStream = new MemoryStream();
@@ -34,6 +35,7 @@ namespace CarPlateRecon
 
             return new Bitmap(bitmap);
         }
+
         public BitmapImage BitmapToBitmapImage(Bitmap bitmap)
         {
             using var memory = new MemoryStream();
