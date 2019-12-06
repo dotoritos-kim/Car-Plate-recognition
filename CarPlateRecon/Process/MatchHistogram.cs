@@ -1,18 +1,15 @@
 ﻿using OpenCvSharp;
-using System.Threading;
 using System.Threading.Tasks;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Resources;
 using System.Collections;
 using System.Globalization;
+using System.Diagnostics;
 
 namespace CarPlateRecon.Process
 {
-    class MatchHistogram
+    public class MatchHistogram
     {
         ConvertTools ConvertTool = new ConvertTools();
         Mat Histogram = new Mat();
@@ -27,6 +24,18 @@ namespace CarPlateRecon.Process
                 CompareHist_sum.Add(Cv2.CompareHist(Histogram,mats[i],HistCompMethods.Bhattacharyya));
             });
             return 0;
+        }
+
+        public void test()
+        {
+            ResourceSet rsrcSet = CarPlateRecon.Properties.Resources.ResourceManager.GetResourceSet(CultureInfo.CurrentCulture, false, true);
+
+            foreach (DictionaryEntry entry in rsrcSet)
+            {
+                Object name = entry.Key;
+                Object resource = entry.Value;
+                Debug.WriteLine(name + " [  ] " + resource);
+            }
         }
     }
 }
